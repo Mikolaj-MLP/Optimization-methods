@@ -84,3 +84,24 @@ def adam_optimizer(f_grad, x0, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_it
         if np.linalg.norm(grad) < tol:
             break
     return x, trajectory
+
+def newton_method(f_grad, f_hess, x0, max_iters=100, tol=1e-6):
+    x = x0.copy()
+    trajectory = [x.copy()]
+    
+    for i in range(max_iters):
+        grad = f_grad(x)
+        hess = f_hess(x)
+        
+        try:
+            delta = np.linalg.solve(hess, grad)
+        except np.linalg.LinAlgError:
+            break  # Hessian not invertible
+        
+        x -= delta
+        trajectory.append(x.copy())
+        
+        if np.linalg.norm(grad) < tol:
+            break
+            
+    return x, trajectory
